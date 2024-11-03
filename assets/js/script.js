@@ -20,9 +20,8 @@ const forecastItemsContainer = document.querySelector(
 
 const apiKey = "78b15f43b6ac82c203d35a970b5d8e08";
 
-// Load weather for current location on page load
 document.addEventListener("DOMContentLoaded", () => {
-    locationBtn.click(); // Programmatically trigger a click on the location button
+    useIPGeolocation();
 });
 
 searchBtn.addEventListener("click", () => {
@@ -41,32 +40,46 @@ cityInput.addEventListener("keydown", (e) => {
     }
 });
 
-locationBtn.addEventListener("click", async () => {
-    try {
-        const permissionStatus = await navigator.permissions.query({
-            name: "geolocation",
-        });
+locationBtn.addEventListener("click", () => {
+    useIPGeolocation();
+});
 
-        if (permissionStatus.state === "denied") {
-            alert(
-                "Location permission denied. Please enable it in your browser settings."
-            );
+async function getUserIP() {
+    try {
+        const response = await fetch("https://api.ipify.org?format=json");
+        const data = await response.json();
+        return data.ip;
+    } catch (error) {
+        console.error("Error getting IP address:", error);
+        return null;
+    }
+}
+
+async function useIPGeolocation() {
+    try {
+        const ip = await getUserIP();
+        if (!ip) {
+            alert("Unable to retrieve IP address.");
             return;
         }
 
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const { latitude, longitude } = position.coords;
-                updateWeatherInfo("", latitude, longitude);
-            });
+        // Use IP in ipapi URL
+        const response = await fetch(`https://ipapi.co/${ip}/json/`);
+        const data = await response.json();
+        const { city, latitude, longitude } = data;
+
+        if (latitude && longitude) {
+            updateWeatherInfo("", latitude, longitude);
         } else {
-            alert("Geolocation is not supported by this browser.");
+            alert("Unable to retrieve location from IP.");
         }
     } catch (error) {
-        console.error("Error checking location permissions:", error);
-        alert("An error occurred while checking location permissions.");
+        console.error("IP-based geolocation error:", error);
+        alert(
+            "Unable to retrieve your location. Please enter a city manually."
+        );
     }
-});
+}
 
 async function fetchWeatherData(endPoint, city = null, lat = null, lon = null) {
     try {
@@ -135,7 +148,7 @@ function getWeatherIcon(id) {
         return "snow";
     } else if (id <= 781) {
         return "atmosphere";
-    } else if (id <= 800) {
+    } else if (id === 800) {
         return "clear";
     } else {
         return "clouds";
@@ -163,7 +176,7 @@ function loadForecastData(data) {
 }
 
 function updateForecastItems(forecastData) {
-    const fragment = document.createDocumentFragment(); // Create a document fragment
+    const fragment = document.createDocumentFragment();
 
     forecastData.forEach((item) => {
         const forecastItem = document.createElement("div");
@@ -185,8 +198,8 @@ function updateForecastItems(forecastData) {
             )} &deg;C</h5>
         `;
 
-        fragment.appendChild(forecastItem); // Append to the fragment
+        fragment.appendChild(forecastItem);
     });
 
-    forecastItemsContainer.appendChild(fragment); // Append the fragment to the DOM
+    forecastItemsContainer.appendChild(fragment);
 }
