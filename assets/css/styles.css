@@ -200,3 +200,59 @@ body::before {
     width: fit-content;
 }
 /* END SECTION: MESSAGE */
+
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+    .main-container {
+        width: fit-content;
+        height: fit-content;
+        /* padding: 15px; */
+    }
+
+    .weather-summary-img {
+        width: 100px;
+        height: 100px;
+    }
+
+    .weather-info {
+        gap: 15px;
+    }
+
+    .condition-item span {
+        font-size: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-container {
+        width: fit-content;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .city-input {
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    .search-btn {
+        right: 10px;
+    }
+    .location-btn {
+        right: 50px;
+    }
+
+    .weather-summary-img {
+        width: 80px;
+        height: 80px;
+    }
+
+    .condition-item span {
+        font-size: 20px;
+    }
+
+    .forecast-item {
+        min-width: 60px;
+        padding: 8px;
+    }
+}
