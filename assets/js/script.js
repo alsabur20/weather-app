@@ -20,6 +20,11 @@ const forecastItemsContainer = document.querySelector(
 
 const apiKey = "78b15f43b6ac82c203d35a970b5d8e08";
 
+// Load weather for current location on page load
+document.addEventListener("DOMContentLoaded", () => {
+    locationBtn.click(); // Programmatically trigger a click on the location button
+});
+
 searchBtn.addEventListener("click", () => {
     if (cityInput.value != "") {
         updateWeatherInfo(cityInput.value);
